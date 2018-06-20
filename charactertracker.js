@@ -1,8 +1,15 @@
-const prefix = "!"; // Set bot prefix here
+/*  Sean Mayton
+Monitors a discord channel, reading new messages for user commands.
+Receives user input from the users in the channel.
+Calls the WarcraftLogs API to obtain the relevant data.
+Parses this data to find the average of the user's rankings.
+Returns this average to the user in the channel.                  */
+
+const prefix = "!";                      // Message prefix to call the bot
 
 const request = require('request');
-const Discord = require("discord.io"); // Load discord.io
-const bot = new Discord.Client({ // Load bot
+const Discord = require("discord.io");      // Load the discord.io library
+const bot = new Discord.Client({            // Load the bot
     token: "NDQ5MDczNzQ4MjE0MTUzMjE3.Deffbg.U2S65pgJy6DC-FYgZS8IWnykwJ0",
     autorun: true
 });
@@ -10,35 +17,26 @@ const bot = new Discord.Client({ // Load bot
 var tarServer, tarRegion, tarCharacter, tarMetric, pctSum, pctRank, avgRank, returnString;
 const logsKey = "879f290422d74824299a945f46eefca3";
 
-const stdin = process.stdin;         // Use the terminal to run JS code
+const stdin = process.stdin;                      // Use the terminal to run JS code
 stdin.on("data", function(input) {
     input = input.toString();
-    try {       // Attempt to run input
+    try {                                         // Attempt to run input
         let output = eval(input);
         console.log(output);
-    } catch (e) {       // Failed
+    } catch (e) {                                  // Failed
         console.log("Error in eval.\n"+e.stack);
     }
 });
 
-bot.on("ready", function() { // When the bot comes online...
-    console.log("I'm online!");
+bot.on("ready", function() {        // On startup
+    console.log("Online!");
 });
 
-bot.on("message", function(user, userID, channelID, message, event) { // Message detected
-    if (message.startsWith(prefix)) { // Message starts with prefix
-        let command = message.slice(prefix.length).split(" "); // Split message into words
-        switch (command[0]) { // Execute code depending on first word
-        case "ping": // ping: reply "pong"                                  // Template Function. Kept for testing.
-            bot.sendMessage({to: channelID, message: "Pong!"});
-            break;
-        case "roll": // roll: choose a random number                        // Template Function. Kept for testing.
-            let max = parseInt(command[1]) || 100;
-            let min = 1;
-            let result = Math.floor(Math.random()*(max-min+1)+min);
-            bot.sendMessage({to: channelID, message: "From "+min+" to "+max+", you rolled: **"+result+"**"});
-            console.log("From "+min+" to "+max+", you rolled: **"+result+"**");
-            break;
+
+bot.on("message", function(user, userID, channelID, message, event) { // A message is posted in the channel
+    if (message.startsWith(prefix)) {                                 // Check if that message starts with the designated prefix
+        let command = message.slice(prefix.length).split(" ");        // Split the message into separate words
+        switch (command[0]) {                                         // Execute code depending on first word
         case "tracknick":
             var apiURL = "https://www.warcraftlogs.com:443/v1/rankings/character/Kfcbaer/sargeras/US?metric=dps&api_key=879f290422d74824299a945f46eefca3";  
             var logs;
